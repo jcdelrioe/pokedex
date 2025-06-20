@@ -14,18 +14,26 @@ export class SeedService {
   ) {}
 
   async executeSeed() {
-    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10')
+    await this.pokemonModel.deleteMany({})
+
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=650')
     if (!response.ok) {
       throw new Error('Failed to fetch Pokémon data')
     }
     const data = (await response.json()) as PokeResponse
 
-    data.results.forEach(async ({ name, url }) => {
+    const pokemonToInsert: { name: string; no: number }[] = []
+
+    data.results.forEach(({ name, url }) => {
       const segments = url.split('/')
       const no: number = +segments[segments.length - 2]
 
-      const pokemon = await this.pokemonModel.create({ name, no })
+      pokemonToInsert.push({ name, no })
+
+      // const pokemon = await this.pokemonModel.create({ name, no })
     })
+
+    await this.pokemonModel.insertMany(pokemonToInsert)
 
     return 'Seed executed successfully'
   }
