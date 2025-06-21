@@ -24,6 +24,7 @@ import { JoiValidationSchema } from './config/joi.validation'
         (() => {
           throw new Error('MONGODB environment variable is not defined')
         })(),
+      { dbName: 'pokemonsdb' },
     ),
     PokemonModule,
     CommonModule,
